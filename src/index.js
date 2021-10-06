@@ -1,16 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App.js";
-import ContextProvider from "./state/index.js";
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import App from "./Components/App.js";
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ContextProvider>
-        <App />
-      </ContextProvider>
-    </BrowserRouter>
+    <App />
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
+
+
