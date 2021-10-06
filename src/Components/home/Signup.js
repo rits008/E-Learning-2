@@ -1,174 +1,152 @@
-import React from "react";
-import {
-  Grid,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  LinearProgress,
-} from "@mui/material";
-import { makeStyles } from "@material-ui/core";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import MyTextField from "../../base/MyTextField";
-import MyButton from "../../base/MyButton";
-import MyAlert from "../../base/MyAlert";
-import api from "../../network/";
-import { Link, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import { Axios } from "axios";
+import Link from "@material-ui/core/Link";
+import { NavLink } from "react-router-dom";
+import Grid from "@material-ui/core/Grid";
+import { FormControl } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
+import { Select } from "@material-ui/core";
+import { InputLabel } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
 
-function Register() {
+const Signup = () => {
+
+
+
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const classes = useStyles();
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState({});
+  const handleSubmit=async()=>{
 
-  const history = useHistory();
-
-  const buttonStyle = {
-    padding: "10px 12px",
-    borderRadius: "8px",
-    transition: "all 0.1s ease-in-out",
-    "&:hover": {
-      transform: "translateY(-2px)",
-      backgroundColor: "#0069d9",
+ const res=await fetch("http://iiitv-classroom.herokuapp.com/register",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
     },
-    "&.disabled": {
-      cursor: "not-allowed",
-    },
-  };
+    body:JSON.stringify({
+      role:"student",
+      name,
+      email,
+      password,
+    })
+  })
 
-  const handleUserRegister = async () => {
-    if (email === "" || password === "" || name === "") {
-      setError({
-        message: "Please fill all the fields",
-        severity: "error",
-      });
-      return;
-    }
+  const data=await res.json();
 
-    setLoading(true);
-    try {
-      const loginData = {
-        email,
-        password,
-        name,
-        role: "student",
-      };
-      const res = await api.register(loginData);
+  console.log(data);
 
-      console.log(res);
+  }
 
-      history.push("/login");
+   return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>{/* <LockOutlinedIcon /> */}</Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                value={name} onChange={({target: {value}}) =>setName(value)}
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="Name"
+                autoFocus
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                 value={email} onChange={({target: {value}}) =>setEmail(value)}
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                 value={password} onChange={({target: {value}}) =>setPassword(value)}
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+            </Grid>
+        
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            className={classes.submit}
+          >
+            Sign Up
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+        
+              <NavLink to = "/Login">
+                Already have an account? Sign in
 
-      if (res.status > 200 && res.status < 300) {
-        setError({
-          message: "Registeration Successful now Login",
-          severity: "success",
-        });
-      }
-    } catch (error) {
-      const { data } = error.response;
-      setError(data);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      {error.message && (
-        <MyAlert
-          message={error.message}
-          severity={error.status}
-          onClose={() => setError({})}
-        />
-      )}
-      <div className={classes.container}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Typography variant="h4" align="center" gutterBottom>
-              <b>Create account</b>
-            </Typography>
-            <Typography variant="body1" align="center" gutterBottom>
-              Already have account <Link to="/login"> Sign in</Link>
-            </Typography>
+                </NavLink>
+              
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <MyTextField
-              label="Email"
-              placeholder="enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MyTextField
-              label="Name"
-              placeholder="enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MyTextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="enter your password"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              label="show password"
-              control={
-                <Checkbox
-                  checked={showPassword}
-                  onChange={(e) => setShowPassword(e.target.checked)}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MyButton
-              onClick={handleUserRegister}
-              fullWidth
-              disabled={loading}
-              label="Register"
-              styles={buttonStyle}
-              endIcon={<ArrowRightAltIcon sx={{ fontSize: "40px" }} />}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            {loading && <LinearProgress />}
-          </Grid>
-        </Grid>
       </div>
-    </div>
+    </Container>
   );
+
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    [theme.breakpoints.up(780)]: {
-      width: "25%",
-      marginTop: "100px",
-      padding: theme.spacing(3),
-      borderTop: "4px solid #626EE3",
-      borderRadius: theme.spacing(1),
-      boxShadow: theme.shadows[2],
-      margin: "0 auto",
-    },
-  },
 
-  button: {
-    backgroundColor: "#626EE3",
-    borderRadius: theme.spacing(1),
-    padding: theme.spacing(1),
+export default Signup;
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
   },
 }));
 
-export default Register;
+ 
+// login-->token back
+// token authorization headers and send it backend to verify
+// backend verify token and send user data
