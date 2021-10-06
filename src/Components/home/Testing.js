@@ -12,7 +12,7 @@ import { useState } from 'react';
 export function Testing() {
 
 
-    const [userData, setUserData] = useState({});
+const [userData, setUserData] = useState({});
 
   useEffect(() => {
     getData();

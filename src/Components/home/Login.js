@@ -1,4 +1,7 @@
 import React from "react";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,24 +16,9 @@ import { InputLabel } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-/* import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'; */
-
-/* function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-} */
-
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import Home from "./Home";
+import { Redirect } from "react-router";
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -51,12 +39,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
+
+
+
+
 export default function Login() {
-
-
-
-
   const classes = useStyles();
+
+
+
+
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+
+  const handleSubmit=async()=>{
+
+ const res=await fetch("http://iiitv-classroom.herokuapp.com/login",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+    },
+    body:JSON.stringify({
+      email,
+      password,
+    })
+  })
+
+  const data=await res.json();
+
+   if(data.status!=="error"){
+      localStorage.setItem("token",data.token);
+    
+      
+      // set up react router to redirect to home page
+   }
+   else
+   {
+     console.log("you dont have any account")
+   }
+  }
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -66,36 +92,15 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              {/*   <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              /> */}
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {/*  <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              /> */}
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -103,45 +108,25 @@ export default function Login() {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  //value={}
-                  label="ROle"
-                  // onChange={handleChange}
-                >
-                  <MenuItem>Student</MenuItem>
-                  <MenuItem>Instructor</MenuItem>
-                  {/* <MenuItem value={student}>Student</MenuItem>
-   <MenuItem value={instructor}>Instructor</MenuItem> */}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
                 name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
               />
             </Grid>
-            {/* <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid> */}
           </Grid>
           <Button
             type="submit"
             fullWidth
             variant="contained"
+            onClick={handleSubmit}
             color="primary"
             className={classes.submit}
           >
@@ -155,7 +140,6 @@ export default function Login() {
                 </NavLink>
             </Grid>
           </Grid>
-        </form>
       </div>
       {/*  <Box mt={5}>
         <Copyright />

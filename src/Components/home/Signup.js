@@ -14,24 +14,117 @@ import { InputLabel } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-/* import Login2 from './Login2'; */
-/* import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'; */
 
-/* function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+const Signup = () => {
+
+
+
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const classes = useStyles();
+
+  const handleSubmit=async()=>{
+
+ const res=await fetch("http://iiitv-classroom.herokuapp.com/register",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+    },
+    body:JSON.stringify({
+      role:"student",
+      name,
+      email,
+      password,
+    })
+  })
+
+  const data=await res.json();
+
+  console.log(data);
+
+  }
+
+   return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>{/* <LockOutlinedIcon /> */}</Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                value={name} onChange={({target: {value}}) =>setName(value)}
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="Name"
+                autoFocus
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                 value={email} onChange={({target: {value}}) =>setEmail(value)}
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                 value={password} onChange={({target: {value}}) =>setPassword(value)}
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+            </Grid>
+        
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            className={classes.submit}
+          >
+            Sign Up
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+        
+              <NavLink to = "/Login">
+                Already have an account? Sign in
+
+                </NavLink>
+              
+            </Grid>
+          </Grid>
+      </div>
+    </Container>
   );
-} */
+
+}
+
+
+export default Signup;
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -53,133 +146,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Signup() {
-  const [inputName, setInputName] = useState("");
-  const [inputEmail, setInputEmail] = useState("");
-  const [inputPassword, setInputPassword] = useState("");
-  const [inputRole, setInputRole] = useState("");
-
-  const classes = useStyles();
-
-
-  const Submit = async (e) => {
-    e.preventDefault();
-
-        await Axios.post(`${URL}/users/register`, {email: inputEmail, name: inputName, Role: inputRole,password: inputPassword})
-        .then(res => {
-           /*  const token = new Cookies();
-            token.set('token', res.data.token, {path: '/', maxAge:604800 })
-            //return to home page
-            window.location = "/"; */
-        })
-       /*  .catch(err => setError(err.response.data.message)); */
-    
-}
-
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>{/* <LockOutlinedIcon /> */}</Avatar>
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  //value={}
-                  label="ROle"
-                  // onChange={handleChange}
-                >
-                  <MenuItem>Student</MenuItem>
-                  <MenuItem>Instructor</MenuItem>
-                  {/* <MenuItem value={}>Student</MenuItem>
-    <MenuItem value={}>Instructor</MenuItem> */}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-            </Grid>
-            {/* <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid> */}
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign Up
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-        
-              <NavLink to = "/Login">
-                Already have an account? Sign in
-
-                </NavLink>
-              
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-      {/*  <Box mt={5}>
-        <Copyright />
-      </Box> */}
-    </Container>
-  );
-}
+ 
+// login-->token back
+// token authorization headers and send it backend to verify
+// backend verify token and send user data
