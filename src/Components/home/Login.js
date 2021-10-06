@@ -1,149 +1,160 @@
 import React from "react";
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import {
+  Grid,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  LinearProgress,
+} from "@mui/material";
+import { makeStyles } from "@material-ui/core";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import MyTextField from "../../base/MyTextField";
+import MyButton from "../../base/MyButton";
+import MyAlert from "../../base/MyAlert";
+import api from "../../network/";
+import { Link } from "react-router-dom";
+import { useAppState } from "../../state";
 
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import { NavLink } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import { FormControl } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
-import { Select } from "@material-ui/core";
-import { InputLabel } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import Home from "./Home";
-import { Redirect } from "react-router";
+function Login() {
+  const classes = useStyles();
+
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState({});
+  const { dispatch } = useAppState();
+
+  const buttonStyle = {
+    padding: "10px 12px",
+    borderRadius: "8px",
+    transition: "all 0.1s ease-in-out",
+    "&:hover": {
+      transform: "translateY(-2px)",
+      backgroundColor: "#0069d9",
+    },
+    "&.disabled": {
+      cursor: "not-allowed",
+    },
+  };
+
+  const handleUserLogin = async () => {
+    if (email === "" || password === "") {
+      setError({
+        message: "Please fill all the fields",
+        severity: "error",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const loginData = {
+        email,
+        password,
+      };
+      const { data } = await api.login(loginData);
+
+      console.log(data);
+
+      setError({
+        message: "Login Successful",
+        severity: "success",
+      });
+    } catch (error) {
+      const { data } = error.response;
+      setError(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      {error.message && (
+        <MyAlert
+          message={error.message}
+          severity={error.status}
+          onClose={() => setError({})}
+        />
+      )}
+      <div className={classes.container}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h4" align="center" gutterBottom>
+              <b>Login</b>
+            </Typography>
+            <Typography variant="body1" align="center" gutterBottom>
+              Don't have account <Link to="/register"> Sign up</Link>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <MyTextField
+              label="Email"
+              placeholder="enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <MyTextField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="enter your password"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              label="show password"
+              control={
+                <Checkbox
+                  checked={showPassword}
+                  onChange={(e) => setShowPassword(e.target.checked)}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <MyButton
+              onClick={handleUserLogin}
+              fullWidth
+              disabled={loading}
+              label="Login"
+              styles={buttonStyle}
+              endIcon={<ArrowRightAltIcon sx={{ fontSize: "40px" }} />}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {loading && <LinearProgress />}
+          </Grid>
+        </Grid>
+      </div>
+    </div>
+  );
+}
+
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+  container: {
+    width: "80%",
+    margin: "0 auto",
+    [theme.breakpoints.up(780)]: {
+      width: "25%",
+      marginTop: "100px",
+      padding: theme.spacing(3),
+      borderTop: "4px solid #626EE3",
+      borderRadius: theme.spacing(1),
+      boxShadow: theme.shadows[2],
+    },
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
+
+  button: {
+    backgroundColor: "#626EE3",
+    borderRadius: theme.spacing(1),
+    padding: theme.spacing(1),
   },
 }));
 
-
-
-
-
-
-
-export default function Login() {
-  const classes = useStyles();
-
-
-
-
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-
-  const handleSubmit=async()=>{
-
- const res=await fetch("http://iiitv-classroom.herokuapp.com/login",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-    },
-    body:JSON.stringify({
-      email,
-      password,
-    })
-  })
-
-  const data=await res.json();
-
-   if(data.status!=="error"){
-      localStorage.setItem("token",data.token);
-    
-      
-      // set up react router to redirect to home page
-   }
-   else
-   {
-     console.log("you dont have any account")
-   }
-  }
-
-
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>{/* <LockOutlinedIcon /> */}</Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            onClick={handleSubmit}
-            color="primary"
-            className={classes.submit}
-          >
-            Login
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <NavLink to = "/register">
-                Create an account? Sign Up
-
-                </NavLink>
-            </Grid>
-          </Grid>
-      </div>
-      {/*  <Box mt={5}>
-        <Copyright />
-      </Box> */}
-    </Container>
-  );
-}
+export default Login;
