@@ -12,8 +12,9 @@ import MyTextField from "../../base/MyTextField";
 import MyButton from "../../base/MyButton";
 import MyAlert from "../../base/MyAlert";
 import api from "../../network/";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useAppState } from "../../state";
+import { setUserData } from "../../state/reducer";
 
 function Login() {
   const classes = useStyles();
@@ -23,6 +24,7 @@ function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState({});
+  const history = useHistory();
   const { dispatch } = useAppState();
 
   const buttonStyle = {
@@ -55,12 +57,16 @@ function Login() {
       };
       const { data } = await api.login(loginData);
 
-      console.log(data);
+      localStorage.setItem("token", data.access_token);
+
+      dispatch(setUserData(data.user));
 
       setError({
         message: "Login Successful",
         severity: "success",
       });
+
+      history.push("/");
     } catch (error) {
       const { data } = error.response;
       setError(data);
