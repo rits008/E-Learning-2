@@ -1,19 +1,23 @@
-import * as React from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import BookIcon from "@mui/icons-material/Book";
 import HomeIcon from "@mui/icons-material/Home";
+import DoneIcon from "@mui/icons-material/Done";
+import { styled } from "@mui/material/styles";
+import { Link, useLocation } from "react-router-dom";
+import { useAppState } from "../../state";
 
 export default function TemporaryDrawer(props) {
   const { handleOpenDrawer, open } = props;
+
+  const { state } = useAppState();
+
+  const { pathname } = useLocation();
 
   const toggleDrawer = () => {
     handleOpenDrawer();
@@ -21,38 +25,47 @@ export default function TemporaryDrawer(props) {
 
   const sx = {
     color: "#007FFF",
+    fontSize: "18px",
   };
 
   const drawerOptions = [
-    {
-      text: "Courses",
-      icon: <BookIcon sx={sx} />,
-      link: "/courses",
-    },
     {
       text: "Home",
       icon: <HomeIcon sx={sx} />,
       link: "/",
     },
-  ];
 
-  const list = (anchor) => (
+    {
+      text: "Courses",
+      icon: <BookIcon sx={sx} />,
+      link: "/approved",
+      role: "student",
+    },
+
+    {
+      text: "Approved Courses",
+      icon: <DoneIcon sx={sx} />,
+      link: "/approved",
+      role: "admin",
+    },
+  ].filter((option) => (option.role ? option.role === state.role : true));
+
+  const list = () => (
     <Box
-      sx={{ width: 250 }}
-      role="presentation"
+      sx={{ width: 250, padding: "10px" }}
       onClick={toggleDrawer}
       onKeyDown={toggleDrawer}
     >
       <List>
-        {drawerOptions.map(({ text, icon }) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{icon}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
+        {drawerOptions.map(({ text, icon, link }) => (
+          <CustomLink to={link} key={text}>
+            <CustomListItem button active={(pathname === link).toString()}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText primary={text} />
+            </CustomListItem>
+          </CustomLink>
         ))}
-        <Divider />
       </List>
-      <List></List>
     </Box>
   );
 
@@ -62,3 +75,31 @@ export default function TemporaryDrawer(props) {
     </Drawer>
   );
 }
+
+const CustomLink = styled(Link)`
+  text-decoration: none;
+  color: #444;
+`;
+
+const CustomListItem = styled(ListItem)`
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+
+  ${({ active }) => {
+    if (active === "true") {
+      return `
+        background-color: #f0f7ff;
+        color: #007FFF;
+
+        &:hover {
+            background-color: #f0f7ff;
+        }
+
+        `;
+    }
+  }}
+`;

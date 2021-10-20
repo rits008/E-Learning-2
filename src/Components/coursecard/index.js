@@ -2,8 +2,53 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import Button from "@mui/material/Button";
 
-function ClassroomCard({ course, color }) {
+function ClassroomCard({
+  course,
+  color,
+  admin,
+  showButton = true,
+  approveCourse,
+  rejectCourse,
+}) {
   const classes = useStyles();
+
+  const enrollStudent = () => {
+    console.log("enroll", course);
+  };
+
+  const renderButtons = () => {
+    if (admin)
+      return (
+        <React.Fragment>
+          <Button
+            size="small"
+            color="success"
+            onClick={approveCourse}
+            className={classes.button}
+          >
+            Approve
+          </Button>
+
+          <Button
+            size="small"
+            onClick={rejectCourse}
+            className={classes.button}
+            color="error"
+          >
+            Reject
+          </Button>
+        </React.Fragment>
+      );
+
+    return (
+      <Button size="small" onClick={() => {}} className={classes.button}>
+        Enroll
+      </Button>
+    );
+  };
+
+  // admin@gmail.com
+  //  hello_user,
 
   return (
     <div className={classes.container}>
@@ -18,11 +63,7 @@ function ClassroomCard({ course, color }) {
         </div>
       </div>
       <div className={classes.middle}></div>
-      <div className={classes.lower}>
-        <Button size="small" onClick={() => {}} className={classes.button}>
-          Enroll
-        </Button>
-      </div>
+      <div className={classes.lower}>{showButton && renderButtons()}</div>
     </div>
   );
 }
@@ -36,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
     width: 300,
     overflow: "hidden",
     margin: "0 auto",
-    border: " 1px solid #dadce0",
     borderRadius: "8px",
     border: "1px solid #dcdcdc",
     position: "relative",
@@ -53,7 +93,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     color: "#fff",
-    color: "#fff",
     textTransform: "capitalize",
   },
 
@@ -64,10 +103,12 @@ const useStyles = makeStyles((theme) => ({
 
   title: {
     fontSize: 22,
+    fontWeight: 400,
   },
 
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: 300,
   },
 
   middle: {
@@ -86,5 +127,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     position: "relative",
     transform: "translateY(-40%)",
+    fontWeight: 900,
   },
 }));

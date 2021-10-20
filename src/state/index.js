@@ -8,9 +8,8 @@ const ContextProvider = ({ children }) => {
     user: null,
     courses: [],
     enrolledCourses: [],
+    role: null,
   });
-
-  console.log(state);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

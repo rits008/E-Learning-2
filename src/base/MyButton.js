@@ -1,6 +1,7 @@
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const defaultStyles = {
   boxShadow: "none",
@@ -40,8 +41,14 @@ const StyledButton = styled(Button)(({ styles }) => {
   return { ...defaultStyles, ...styles };
 });
 
-function MyButton({ label, ...rest }) {
-  return <StyledButton {...rest}>{label}</StyledButton>;
+function MyButton({ label, link, ...rest }) {
+  if (!link) return <StyledButton {...rest}>{label}</StyledButton>;
+
+  return (
+    <Link to={link} style={{ textDecoration: "none" }}>
+      <StyledButton {...rest}>{label}</StyledButton>
+    </Link>
+  );
 }
 
 export default MyButton;

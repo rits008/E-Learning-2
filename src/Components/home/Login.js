@@ -14,7 +14,7 @@ import MyAlert from "../../base/MyAlert";
 import api from "../../network/";
 import { Link, useHistory } from "react-router-dom";
 import { useAppState } from "../../state";
-import { setUserData } from "../../state/reducer";
+import { setEnrolledCourses, setRole, setUserData } from "../../state/reducer";
 
 function Login() {
   const classes = useStyles();
@@ -57,9 +57,18 @@ function Login() {
       };
       const { data } = await api.login(loginData);
 
-      localStorage.setItem("token", data.access_token);
+      console.log(data);
+
+      localStorage.setItem("classroomToken", data.accessToken);
 
       dispatch(setUserData(data.user));
+      dispatch(setEnrolledCourses(data.user.courses));
+
+      if (data.user.isAdmin) {
+        dispatch(setRole("admin"));
+      } else if (data.user.isInstructor) {
+        dispatch(setRole("instructor"));
+      } else dispatch(setRole("student"));
 
       setError({
         message: "Login Successful",
@@ -76,7 +85,7 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className={classes.outerContainer}>
       {error.message && (
         <MyAlert
           message={error.message}
@@ -160,6 +169,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#626EE3",
     borderRadius: theme.spacing(1),
     padding: theme.spacing(1),
+  },
+
+  outerContainer: {
+    minHeight: "100vh",
   },
 }));
 
