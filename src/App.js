@@ -1,25 +1,63 @@
 import React from "react";
+import { makeStyles } from "@material-ui/core";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { useAppState } from "./state";
 import Signup from "./Components/home/Signup";
 import Login from "./Components/home/Login";
-import { Route, Switch, Redirect } from "react-router-dom";
-import Home from "./Components/home/Home";
-import { useAppState } from "./state";
+import Dashboard from "./Components/Dashboard";
+import Navbar from "./Components/navbar/Navbar";
+import NotFound from "./Components/NotFound";
+import ApprovedCourses from "./Components/pages/ApprovedCourses";
 function App() {
+  let { state } = useAppState();
+
+  const classes = useStyles();
+
   return (
-    <Switch>
-      <PrivateRoute exact path="/" component={Home} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Signup} />
-    </Switch>
+    <div className={classes.container}>
+      {state.user && <Navbar />}
+      <Switch>
+        <PrivateRoute exact path="/" component={Dashboard} />
+        <PrivateRoute exact path="/approved" component={ApprovedCourses} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/register" component={Signup} />
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    </div>
   );
 }
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    overflow: "hidden",
+    minHeight: "100vh",
+    [theme.breakpoints.up(780)]: {
+      width: "100%",
+    },
+  },
+}));
+
 function PrivateRoute(props) {
   let { state } = useAppState();
+  return state.user ? <Route {...props} /> : <Redirect to="/login" />;
+}
 
-  console.log(state);
+function AdminRoute(props) {
+  let { state } = useAppState();
+  return state.user && state.user.isAdmin ? (
+    <Route {...props} />
+  ) : (
+    <Redirect to="*" />
+  );
+}
 
-  return state.name ? <Route {...props} /> : <Redirect to="/login" />;
+function InstructorRoute(props) {
+  let { state } = useAppState();
+  return state.user && state.user.isInstructor ? (
+    <Route {...props} />
+  ) : (
+    <Redirect to="/" />
+  );
 }
 
 export default App;
